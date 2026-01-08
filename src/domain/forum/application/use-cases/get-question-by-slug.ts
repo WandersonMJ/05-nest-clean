@@ -19,15 +19,16 @@ export class GetQuestionBySlugUseCase {
 
   async execute({
     slug,
-  }: GetQuestionBySlugUseCaseRequest): Promise<GetQuestionBySlugUseCaseResponse> {
-    const question = await this.questionRepository.getBySlug(slug)
+  }: GetQuestionBySlugUseCaseRequest) {
+  // }: GetQuestionBySlugUseCaseRequest): Promise<GetQuestionBySlugUseCaseResponse> {
+    // const question = await this.questionRepository.getBySlug(slug)
 
-    if (!question) {
-      return left(new ResourceNotFoundError())
-    }
+    // if (!question) {
+    //   return left(new ResourceNotFoundError())
+    // }
 
-    return right({
-      question,
-    })
+    // return right({
+    //   question,
+    // })
   }
 }
