@@ -8,7 +8,7 @@ import request from 'supertest'
 import { QuestionFactory } from 'test/factories/make-question'
 import { StudentFactory } from 'test/factories/make-student'
 
-describe('Edit question (E2E)', () => {
+describe('Answer question (E2E)', () => {
     let app: INestApplication
     let prisma: PrismaService
     let studentFactory: StudentFactory
@@ -31,7 +31,7 @@ describe('Edit question (E2E)', () => {
         await app.init()
     })
 
-    test('[PUT] /questions/:id', async () => {
+    test('[POST] /questions/:id', async () => {
         const user = await studentFactory.makePrismaStudent()
 
         const accessToken = jwt.sign({ sub: user.id.toString() })
@@ -43,21 +43,19 @@ describe('Edit question (E2E)', () => {
         const questionId = question.id.toString()
 
         const response = await request(app.getHttpServer())
-            .put(`/questions/${questionId}`)
+            .post(`/questions/${questionId}/answers`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send({
-                title: 'new title',
-                content: 'new content',
+                content: 'new answer',
             })
 
-        const QuestionOnDatabase = await prisma.question.findFirst({
+        expect(response.statusCode).toBe(201)
+
+        const QuestionOnDatabase = await prisma.answer.findFirst({
             where: {
-                title: 'new title',
-                content: 'new content',
+                content: 'new answer',
             },
         })
-        
-        expect(response.statusCode).toBe(204)
 
         expect(QuestionOnDatabase).toBeTruthy()
     })
