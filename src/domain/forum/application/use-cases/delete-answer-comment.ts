@@ -1,5 +1,5 @@
 import { left, right, type Either } from '@/core/either'
-import type { AnswerCommentsRepository } from '../repositories/answers-comments-repository'
+import { AnswerCommentsRepository } from '../repositories/answers-comments-repository'
 import { ResourceNotFoundError } from '@/core/errors/errors/resource-not-found-error'
 import { NotAllowedError } from '@/core/errors/errors/not-allowed-error'
 

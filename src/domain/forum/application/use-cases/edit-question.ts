@@ -1,12 +1,13 @@
 import { left, right, type Either } from '@/core/either'
-import type { Question } from '../../enterprise/entities/question'
-import type { QuestionsRepository } from '../repositories/questions-repository'
+import { Question } from '../../enterprise/entities/question'
+import { QuestionsRepository } from '../repositories/questions-repository'
 import { NotAllowedError } from '@/core/errors/errors/not-allowed-error'
 import { ResourceNotFoundError } from '@/core/errors/errors/resource-not-found-error'
-import type { QuestionAttachmentsRepository } from '../repositories/questions-attachments-repository'
+import { QuestionAttachmentsRepository } from '../repositories/questions-attachments-repository'
 import { QuestionAttachmentList } from '../../enterprise/entities/question-attachment-list'
 import { QuestionAttachment } from '../../enterprise/entities/question-attachment'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { Injectable } from '@nestjs/common'
 
 interface EditQuestionUseCaseRequest {
   authorId: string
@@ -23,11 +24,12 @@ type EditQuestionUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class EditQuestionUseCase {
   constructor(
     private questionsRepository: QuestionsRepository,
     private questionAttachmentsRepository: QuestionAttachmentsRepository,
-  ) {}
+  ) { }
 
   async execute({
     authorId,
@@ -36,40 +38,46 @@ export class EditQuestionUseCase {
     content,
     attachmentsIds,
   }: EditQuestionUseCaseRequest): Promise<EditQuestionUseCaseResponse> {
-    const question = await this.questionsRepository.findById(questionId)
+    try {
+      const question = await this.questionsRepository.findById(questionId)
 
-    if (!question) {
-      return left(new ResourceNotFoundError())
-    }
+      if (!question) {
+        return left(new ResourceNotFoundError())
+      }
 
-    if (authorId !== question.authorId.toString()) {
-      return left(new NotAllowedError())
-    }
+      if (authorId !== question.authorId.toString()) {
+        return left(new NotAllowedError())
+      }
 
-    const currentQuestionAttachments =
-      await this.questionAttachmentsRepository.findManyByQuestionId(questionId)
+      const currentQuestionAttachments =
+        await this.questionAttachmentsRepository.findManyByQuestionId(questionId)
 
-    const questionAttachmentList = new QuestionAttachmentList(
-      currentQuestionAttachments,
-    )
+      const questionAttachmentList = new QuestionAttachmentList(
+        currentQuestionAttachments,
+      )
 
-    const questionAttachments = attachmentsIds.map((attachmentId) => {
-      return QuestionAttachment.create({
-        attachmentId: new UniqueEntityID(attachmentId),
-        questionId: question.id,
+      const questionAttachments = attachmentsIds.map((attachmentId) => {
+        return QuestionAttachment.create({
+          attachmentId: new UniqueEntityID(attachmentId),
+          questionId: question.id,
+        })
       })
-    })
 
-    questionAttachmentList.update(questionAttachments)
+      questionAttachmentList.update(questionAttachments)
 
-    question.attachments = questionAttachmentList
-    question.title = title
-    question.content = content
+      question.attachments = questionAttachmentList
+      question.title = title
+      question.content = content
 
-    await this.questionsRepository.save(question)
+      await this.questionsRepository.save(question)
 
-    return right({
-      question,
-    })
+      return right({
+        question,
+      })
+
+    } catch (error) {
+      console.log('error:::', error)
+    }
+    
   }
 }

@@ -1,6 +1,6 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import type { AnswersRepository } from '../repositories/answers-repository'
-import type { AnswerCommentsRepository } from '../repositories/answers-comments-repository'
+import { AnswersRepository } from '../repositories/answers-repository'
+import { AnswerCommentsRepository } from '../repositories/answers-comments-repository'
 import { AnswerComment } from '../../enterprise/entities/answer-comment'
 import { left, right, type Either } from '@/core/either'
 import { ResourceNotFoundError } from '@/core/errors/errors/resource-not-found-error'
