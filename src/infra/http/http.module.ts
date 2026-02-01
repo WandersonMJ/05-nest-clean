@@ -25,9 +25,9 @@ import { GetQuestionBySlugUseCase } from '@/domain/forum/application/use-cases/g
   ],
   providers: [
     CreateQuestionUseCase,
-    FetchRecentQuestionsUseCase,
     AuthenticateStudentUseCase,
     RegisterStudentUseCase,
+    FetchRecentQuestionsUseCase,
     GetQuestionBySlugUseCase
   ],
 })
